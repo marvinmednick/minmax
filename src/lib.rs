@@ -13,7 +13,7 @@ pub enum MinMax<T> where T: Clone {
     NA,
 }
 
-// Implement `Display` for `MinMax`.
+/// Implement `Display` for `MinMax`.
 impl<T: fmt::Display+ std::clone::Clone> fmt::Display for MinMax<T>
 
 {
@@ -27,6 +27,7 @@ impl<T: fmt::Display+ std::clone::Clone> fmt::Display for MinMax<T>
     }
 }
 
+/// Implement Add for MinMax
 impl<T: std::ops::Add + std::cmp::PartialEq + Add<Output = T>+ std::clone::Clone> Add for MinMax<T> {
     type Output = MinMax<T>;
 
@@ -37,12 +38,13 @@ impl<T: std::ops::Add + std::cmp::PartialEq + Add<Output = T>+ std::clone::Clone
             (MinMax::NA, MinMax::NA) => MinMax::NA,
             (Value(op1), MinMax::Min) | (Value(op1), MinMax::NA) => Value(op1),
             (MinMax::Min, Value(op2)) | (MinMax::NA, Value(op2)) => Value(op2),
-            (MinMax::Max,_) | (_, MinMax::Max) => MinMax::Max,
+            (MinMax::Max,_) | (_, MinMax::Max) => MinMax::Max,            
             (Value(op1), Value(op2)) => Value(op1+op2),
         }
     }
 }
 
+/// Implement Add for MinMax
 impl<T: std::ops::Sub + std::cmp::PartialEq + Sub<Output = T>+ std::clone::Clone> Sub for MinMax<T> {
     type Output = MinMax<T>;
 
@@ -62,6 +64,7 @@ impl<T: std::ops::Sub + std::cmp::PartialEq + Sub<Output = T>+ std::clone::Clone
 }
 
 
+/// Implement AddAssign for MinMax
 impl<T: std::ops::Add + std::cmp::PartialEq + Add<Output = T>+std::clone::Clone> AddAssign for MinMax<T> {
 
     fn add_assign(&mut self, other: Self) {
@@ -70,9 +73,10 @@ impl<T: std::ops::Add + std::cmp::PartialEq + Add<Output = T>+std::clone::Clone>
 }
 
 
-//impl<T: std::ops::Add + std::cmp::PartialEq + Add<Output = T>> MinMax<T> {
+// Othere Implmentations for MinMax
 impl<T: std::fmt::Display+Clone> MinMax<T> {
 
+    ///Unwrap Value into its contents
     pub fn unwrap_value(&self) -> &T {
         match self {
             Value(obj) => obj,
@@ -80,12 +84,15 @@ impl<T: std::fmt::Display+Clone> MinMax<T> {
         }
     }
 
+    ///Returns if MinMax has a specific value or not
     pub fn  is_value(&self) -> bool {
         match self {
             Value(_obj) => true,
             _ => false,
         }
     }
+    
+    ///Returns the specfic value of the MinMax if there is one, otherwise the provided default
     pub fn unwrap_value_or<'a>(&'a self, alt_value: &'a T) -> &T {
         match self {
             Value(obj) => obj,
@@ -108,6 +115,7 @@ mod min_max_tests {
         let v2 = Value(6);
         let v3 = v1 + v2;
         assert_eq!(v3,Value(11));
+        assert_eq!(v3-Value(3),Value(8));
 
         assert_eq!(v3+Max,Max);
         assert_eq!(v3+Min,v3);
@@ -121,6 +129,7 @@ mod min_max_tests {
         let v2 = Value(6.0);
         let v3 = v1 + v2;
         assert_eq!(v3,Value(11.0));
+        assert_eq!(v3-Value(3.0),Value(8.0));
 
         assert_eq!(v3+Max,Max);
         assert_eq!(v3+Min,v3);
